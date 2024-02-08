@@ -14,17 +14,16 @@ export class Game extends Scene
     create ()
     {
         this.add.image(512, 384, SKY_KEY)
-        this.createPlatforms()
-        this.createPlayer()
+        const platforms = this.createPlatforms()
+        const player = this.createPlayer()
         
-
         this.input.once('pointerdown', () => {
 
             this.scene.start('GameOver');
 
         });
 
-        
+        this.physics.add.collider(platforms, player)        
     }
 
     createPlatforms () 
@@ -35,14 +34,14 @@ export class Game extends Scene
         platforms.create(312, 484, GROUND_KEY)
         platforms.create(712, 350, GROUND_KEY)
 
-        
+        return platforms
     }
 
     createPlayer ()
     {
-        this.player = this.physics.add.sprite(512, 384, DUDE_KEY)
-        this.player.setBounce(0.2)
-        this.player.setCollideWorldBounds(true)
+        const player = this.physics.add.sprite(512, 384, DUDE_KEY)
+        player.setBounce(0.2)
+        player.setCollideWorldBounds(true)
 
         this.anims.create({
             key: 'left',
@@ -61,6 +60,8 @@ export class Game extends Scene
             frameRate: 10,
             repeat: -1
         })
+
+        return player
     }
 
 }
