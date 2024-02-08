@@ -2,6 +2,7 @@ import { Scene } from 'phaser';
 
 const GROUND_KEY = 'platform'
 const SKY_KEY = 'sky'
+const DUDE_KEY = 'dude'
 
 export class Game extends Scene
 {
@@ -14,6 +15,7 @@ export class Game extends Scene
     {
         this.add.image(512, 384, SKY_KEY)
         this.createPlatforms()
+        this.createPlayer()
         
 
         this.input.once('pointerdown', () => {
@@ -21,6 +23,8 @@ export class Game extends Scene
             this.scene.start('GameOver');
 
         });
+
+        
     }
 
     createPlatforms () 
@@ -30,5 +34,17 @@ export class Game extends Scene
         platforms.create(512, 660, GROUND_KEY).setScale(2).refreshBody()
         platforms.create(312, 484, GROUND_KEY)
         platforms.create(712, 350, GROUND_KEY)
+
+        
     }
+
+    createPlayer ()
+    {
+        this.player = this.physics.add.sprite(512, 384, DUDE_KEY)
+        this.player.setBounce(0.2)
+        this.player.setCollideWorldBounds(true)
+
+        
+    }
+
 }
