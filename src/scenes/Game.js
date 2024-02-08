@@ -15,7 +15,7 @@ export class Game extends Scene
     {
         this.add.image(512, 384, SKY_KEY)
         const platforms = this.createPlatforms()
-        const player = this.createPlayer()
+        this.player = this.createPlayer()
         
         this.input.once('pointerdown', () => {
 
@@ -23,7 +23,32 @@ export class Game extends Scene
 
         });
 
-        this.physics.add.collider(platforms, player)        
+        this.physics.add.collider(platforms, this.player)
+        
+        this.cursors = this.input.keyboard.createCursorKeys()
+    }
+
+    update ()
+    {
+        if (this.cursors.left.isDown) 
+        {
+            this.player.setVelocityX(-100)
+            this.player.anims.play('left', true)
+        }
+        else if (this.cursors.right.isDown)
+        {
+            this.player.setVelocityX(100)
+            this.player.anims.play('right', true)
+        } 
+        else 
+        {
+            this.player.setVelocityX(0)
+            this.player.anims.play('turn')
+        }
+        if (this.cursors.up.isDown && this.player.body.touching.down) 
+        {
+            this.player.setVelocityY(-330)
+        }
     }
 
     createPlatforms () 
