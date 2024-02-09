@@ -1,4 +1,5 @@
 import { Scene } from 'phaser';
+import ScoreLabel from '../ui/ScoreLabel';
 
 const GROUND_KEY = 'platform'
 const SKY_KEY = 'sky'
@@ -16,6 +17,8 @@ export class Game extends Scene {
         const platforms = this.createPlatforms()
         this.player = this.createPlayer()
         const stars = this.createStars()
+
+        this.scoreLabel = this.createScoreLabel(16, 16, 0)
 
         this.physics.add.collider(platforms, this.player)
         this.physics.add.collider(platforms, stars)
@@ -95,7 +98,17 @@ export class Game extends Scene {
         return stars
     }
 
+    createScoreLabel(x, y, score) {
+        const style = { fontSize: '32px', fill: '#000' }
+        const label = new ScoreLabel(this, x, y, score, style)
+
+        this.add.existing(label)
+
+        return label
+    }
+
     collectStar(player, star) {
         star.disableBody(true, true)
+        this.scoreLabel.add(10)
     }
 }
