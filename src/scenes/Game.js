@@ -3,56 +3,51 @@ import { Scene } from 'phaser';
 const GROUND_KEY = 'platform'
 const SKY_KEY = 'sky'
 const DUDE_KEY = 'dude'
+const STAR_KEY = 'star'
 
-export class Game extends Scene
-{
-    constructor ()
-    {
+export class Game extends Scene {
+    constructor() {
         super('Game');
     }
 
-    create ()
-    {
+    create() {
         this.add.image(512, 384, SKY_KEY)
+
         const platforms = this.createPlatforms()
         this.player = this.createPlayer()
-        
-        this.input.once('pointerdown', () => {
-
-            this.scene.start('GameOver');
-
-        });
+        const stars = this.createStars()
 
         this.physics.add.collider(platforms, this.player)
-        
+        this.physics.add.collider(platforms, stars)
+
+        this.physics.add.overlap(this.player, stars, this.collectStar, null, this)
+
         this.cursors = this.input.keyboard.createCursorKeys()
+
+        this.input.once('pointerdown', () => {
+            this.scene.start('GameOver');
+        });
     }
 
-    update ()
-    {
-        if (this.cursors.left.isDown) 
-        {
+    update() {
+        if (this.cursors.left.isDown) {
             this.player.setVelocityX(-100)
             this.player.anims.play('left', true)
         }
-        else if (this.cursors.right.isDown)
-        {
+        else if (this.cursors.right.isDown) {
             this.player.setVelocityX(100)
             this.player.anims.play('right', true)
-        } 
-        else 
-        {
+        }
+        else {
             this.player.setVelocityX(0)
             this.player.anims.play('turn')
         }
-        if (this.cursors.up.isDown && this.player.body.touching.down) 
-        {
+        if (this.cursors.up.isDown && this.player.body.touching.down) {
             this.player.setVelocityY(-330)
         }
     }
 
-    createPlatforms () 
-    {
+    createPlatforms() {
         const platforms = this.physics.add.staticGroup()
 
         platforms.create(512, 660, GROUND_KEY).setScale(2).refreshBody()
@@ -62,8 +57,7 @@ export class Game extends Scene
         return platforms
     }
 
-    createPlayer ()
-    {
+    createPlayer() {
         const player = this.physics.add.sprite(512, 384, DUDE_KEY)
         player.setBounce(0.2)
         player.setCollideWorldBounds(true)
@@ -76,7 +70,7 @@ export class Game extends Scene
         })
         this.anims.create({
             key: 'turn',
-            frames: [ { key: DUDE_KEY, frame: 4 } ],
+            frames: [{ key: DUDE_KEY, frame: 4 }],
             frameRate: 20
         })
         this.anims.create({
@@ -89,4 +83,19 @@ export class Game extends Scene
         return player
     }
 
+    createStars() {
+        const stars = this.physics.add.group({
+            key: STAR_KEY,
+            repeat: 11,
+            setXY: { x: 12, y: 0, stepX: 70 }
+        })
+        stars.children.iterate((child) => {
+            child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8))
+        })
+        return stars
+    }
+
+    collectStar(player, star) {
+        star.disableBody(true, true)
+    }
 }
